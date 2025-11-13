@@ -1,79 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sampleTodos } from "@/lib/todos";
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
 
-// fetch all todos
+const CreateTodoSchema = z.object({
+  task: z.string().min(1, "Task cannot be empty").max(200),
+  priority: z.enum(["low", "medium", "high"]).default("medium"),
+  dueDate: z.string().optional(),
+});
+
 export async function GET() {
-    return NextResponse.json(sampleTodos);
+  const todos = await prisma.todo.findMany({
+    orderBy: { id: 'asc' }
+  });
+  return NextResponse.json(todos);
 }
 
-// create a new todo by id
 export async function POST(req: NextRequest) {
-    const body = await req.json()
-    const newTodo = {
-        id: Date.now(),
-        task: body.task,
-        completed: false
+  const body = await req.json();
+
+  const result = CreateTodoSchema.safeParse(body);
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues }, { status: 400 });
+  }
+
+  const { task, priority, dueDate } = result.data;
+
+  const todo = await prisma.todo.create({
+    data: {
+      task,
+      priority,
+      dueDate: dueDate ? new Date(dueDate) : null,
+      completed: false,
     }
+  });
 
-    sampleTodos.push(newTodo)
-    return NextResponse.json(newTodo, { status: 201 })
-
+  return NextResponse.json(todo, { status: 201 });
 }
-
-// delete a todo by id
-export function DELETE(req: NextRequest) {
-    const url = new URL(req.url)
-    const idParam = url.searchParams.get('id')
-
-    if (idParam === null) {
-        return NextResponse.json({ message: "ID is required" }, { status: 400 });
-    }
-
-    const id = parseInt(idParam, 10);
-
-    const index = sampleTodos.findIndex((todo) => todo.id === id);
-
-    if (index === -1) {
-        return NextResponse.json({ message: "Not found" }, { status: 404 });
-    }
-
-
-    sampleTodos.splice(index, 1);
-
-    return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
-
-
-}
-
-
-// update task or completed state for a todo by id
-export async function PATCH(req: NextRequest) {
-    const url = new URL(req.url);
-    const idParam = url.searchParams.get('id');
-
-    if (idParam === null) {
-        return NextResponse.json({ message: "ID is required" }, { status: 400 });
-    }
-
-    const id = parseInt(idParam, 10);
-
-    const todo = sampleTodos.find((todo) => todo.id === id)
-
-    if (!todo) {
-        return NextResponse.json({ message: "Not found" }, { status: 404 });
-    }
-
-    try {
-        const body = await req.json();
-
-        if (body.updatedTask) {
-            todo.task = body.updatedTask;
-        } else {
-            return NextResponse.json({ message: "Invalid request" }, { status: 400 });
-        }
-    } catch (error) {
-        todo.completed = !todo.completed
-    }
-
-    return NextResponse.json(todo)
-} 
