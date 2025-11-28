@@ -1,8 +1,10 @@
 -- CreateTable
 CREATE TABLE "Todo" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" SERIAL NOT NULL,
     "task" TEXT NOT NULL,
     "completed" BOOLEAN NOT NULL DEFAULT false,
     "priority" TEXT NOT NULL DEFAULT 'medium',
-    "dueDate" DATETIME
+    "dueDate" TIMESTAMP(3),
+
+    CONSTRAINT "Todo_pkey" PRIMARY KEY ("id")
 );
