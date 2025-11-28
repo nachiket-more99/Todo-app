@@ -1,54 +1,65 @@
-# Todo App
+# My Tasks - AI-Powered Task Manager
 
-A simple Todo application built using **Next.js** and **Tailwind CSS**. This app allows users to manage their todos with features like adding new todos, updating the task name, marking tasks as completed/undo, and deleting tasks.
+A full-stack task manager built with **Next.js**, **Prisma**, and **OpenAI** - featuring natural language task input that automatically extracts task name, due date, and priority using GPT-4o-mini.
+
+🔗 **Live Demo**: https://todo-app-one-amber-25.vercel.app/
 
 ## Features
 
-- Display a list of all todos.
-- Add a new todo.
-- Mark a todo as completed or undo.
-- Update the name of a todo.
-- Delete a todo.
+- **Natural language input** - type "Submit report by Friday, urgent" and AI parses it into a structured task
+- **Priority levels** - low, medium, high with color-coded indicators
+- **Due dates** - with overdue highlighting
+- **Filter** - view All / Active / Completed tasks
+- **Full CRUD** - add, edit, complete, delete todos
+- **Persistent storage** - PostgreSQL via Neon, managed with Prisma ORM
 
 ## Tech Stack
 
-- **Frontend**: Next.js, Tailwind CSS
+- **Frontend**: Next.js 14, Tailwind CSS
 - **Backend**: Next.js API Routes
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/nachiket-more/UpUnikSelf-exercise
-   cd UpUnikSelf-exercise
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-
-   ```bash
-   npm run dev
-   ```
-
-The app will be running at http://localhost:3000
+- **AI**: OpenAI GPT-4o-mini
+- **ORM**: Prisma
+- **Database**: PostgreSQL (Neon)
+- **Validation**: Zod
+- **Deploy**: Vercel
 
 ## API Endpoints
-The app includes a backend with four main routes for managing todos:
 
-- GET /api/todos: Fetch all todos.
-- POST /api/todos: Create a new todo.
-- PATCH /api/todos/:id: Update an existing todo (e.g., mark as completed, edit task name).
-- DELETE /api/todos/:id: Delete a todo.
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/todos` | Fetch all todos |
+| POST | `/api/todos` | Create a new todo |
+| PATCH | `/api/todos/:id` | Update task, priority, due date or completed state |
+| DELETE | `/api/todos/:id` | Delete a todo |
+| POST | `/api/parse-task` | Parse natural language input into structured task via OpenAI |
 
-## Usage
-- View Todos: All current todos will be displayed on the homepage.
-- Add Todo: Use the input form at the top to add a new todo.
-- Mark as Completed/Undo: Click on the checkbox to mark a task as completed or undo it.
-- Edit Task Name: Click on the edit button to modify the task name.
-- Delete Todo: Use the delete button to remove a todo from the list.
+## Local Setup
+
+1. Clone the repository:
+```bash
+   git clone https://github.com/nachiket-more99/Todo-app
+   cd Todo-app
+```
+
+2. Install dependencies:
+```bash
+   npm install
+```
+
+3. Set up environment variables - create a `.env` file:
+```
+   DATABASE_URL=your_postgresql_connection_string
+   OPENAI_API_KEY=your_openai_api_key
+```
+
+4. Run database migrations:
+```bash
+   npx prisma migrate deploy
+```
+
+5. Start the development server:
+```bash
+   npm run dev
+```
+
+The app will be running at http://localhost:3000
